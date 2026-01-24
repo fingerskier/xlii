@@ -1,0 +1,30 @@
+{
+  "name": "fortytwo",
+  "version": "2026.1.1",
+  "description": "Manages AI memory files (CLAUDE.md, AGENTS.md, etc.) which fall outside of git repos",
+  "type": "module",
+  "main": "src/index.js",
+  "bin": {
+    "fortytwo": "./bin/fortytwo.js"
+  },
+  "scripts": {
+    "test": "node --test test/*.test.js",
+    "test:watch": "node --test --watch test/*.test.js",
+    "test:coverage": "node --test --experimental-test-coverage test/*.test.js"
+  },
+  "keywords": [
+    "ai",
+    "memory",
+    "claude",
+    "agents",
+    "sync"
+  ],
+  "author": "",
+  "license": "MIT",
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "dependencies": {
+    "chokidar": "^4.0.0"
+  }
+}
