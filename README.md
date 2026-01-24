@@ -72,7 +72,11 @@ An example directory structure:
 
 ## Usage
 
-**Must** run `npx fortytwo configure myPC ~/dev` prior to any of the following...
+**First** run `npx fortytwo configure myPC ~/dev /memory`
+* sets update the `~/dev` as the base directory
+* set `/memory` as the storage path
+
+**Then** use the following commands to manage your memory files:
 
 `npx fortytwo harvest` ~ copies memory files from the base directories into the storagePath mirror image regardless of which is newer.  If new memory files are found in the base directories they are added to the mirror image.
 
@@ -91,3 +95,5 @@ An example directory structure:
 `npx fortytwo addmemoryFile STUFF.md` ~ adds another memory file to be tracked.
 
 `npx fortytwo watch` ~ watches the base directories for changes to memory files and automatically syncs them to the storagePath mirror image when they change if they are newer than what's in the storage-path.
+
+`npx fortytwo openconfig` ~ opens the fortytwo config file in the default editor.

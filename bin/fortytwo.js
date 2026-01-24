@@ -10,13 +10,15 @@ import {
   addBaseDir,
   addCompleteDir,
   addMemoryFile,
-  watch
+  watch,
+  status,
+  openconfig
 } from '../src/index.js';
 
 const commands = {
   configure: {
-    description: 'Configure fortytwo with system name and base directory',
-    usage: 'fortytwo configure <systemName> <baseDir>',
+    description: 'Configure fortytwo with device name and base directory',
+    usage: 'fortytwo configure <device-name> <directory>',
     handler: configure
   },
   harvest: {
@@ -58,6 +60,16 @@ const commands = {
     description: 'Watch for changes and auto-sync to storage',
     usage: 'fortytwo watch',
     handler: watch
+  },
+  status: {
+    description: 'Show current configuration and storage status',
+    usage: 'fortytwo status',
+    handler: status
+  },
+  openconfig: {
+    description: 'Open the config file in default editor',
+    usage: 'fortytwo openconfig',
+    handler: openconfig
   }
 };
 
