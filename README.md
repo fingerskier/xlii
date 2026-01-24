@@ -1,4 +1,5 @@
-# agent-memory-manager
+# fortytwo
+## an agent memory manager
 
 Manages AI memory files (CLAUDE.md, AGENTS.md, et cetera) which fall outside of git repos.
 
