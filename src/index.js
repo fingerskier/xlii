@@ -35,7 +35,7 @@ export async function configure(args) {
     process.exit(1);
   }
 
-  const [systemName, baseDir] = args;
+  const [systemName, baseDir, customStoragePath] = args;
 
   if (!systemName || !systemName.trim()) {
     console.error('Error: device-name is required and cannot be empty.');
@@ -56,7 +56,9 @@ export async function configure(args) {
     process.exit(1);
   }
 
-  const storagePath = join(homedir(), 'xlii');
+  const storagePath = customStoragePath
+    ? expandPath(customStoragePath.trim())
+    : join(homedir(), 'xlii');
   const storageConfigPath = join(storagePath, 'configuration.json');
 
   const config = {
