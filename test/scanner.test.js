@@ -10,7 +10,7 @@ import {
 } from '../src/scanner.js';
 
 describe('scanner module', () => {
-  const testDir = join(tmpdir(), 'fortytwo-test-scanner-' + Date.now());
+  const testDir = join(tmpdir(), 'xlii-test-scanner-' + Date.now());
 
   before(async () => {
     await mkdir(testDir, { recursive: true });

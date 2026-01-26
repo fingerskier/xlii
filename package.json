@@ -1,11 +1,11 @@
 {
-  "name": "fortytwo",
+  "name": "xlii",
   "version": "2026.1.1",
   "description": "Manages AI memory files (CLAUDE.md, AGENTS.md, etc.) which fall outside of git repos",
   "type": "module",
   "main": "src/index.js",
   "bin": {
-    "fortytwo": "./bin/fortytwo.js"
+    "xlii": "./bin/xlii.js"
   },
   "scripts": {
     "test": "node --test test/*.test.js",

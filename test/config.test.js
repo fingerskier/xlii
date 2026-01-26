@@ -11,7 +11,7 @@ import {
 } from '../src/config.js';
 
 describe('config module', () => {
-  const testDir = join(tmpdir(), 'fortytwo-test-config-' + Date.now());
+  const testDir = join(tmpdir(), 'xlii-test-config-' + Date.now());
 
   before(async () => {
     await mkdir(testDir, { recursive: true });

@@ -31,7 +31,7 @@ export { getStoragePath } from './sync.js';
 export async function configure(args) {
   if (args.length < 2) {
     console.error('Error: Both device-name and directory are required.');
-    console.error('Usage: fortytwo configure <device-name> <directory>');
+    console.error('Usage: xlii configure <device-name> <directory>');
     process.exit(1);
   }
 
@@ -39,13 +39,13 @@ export async function configure(args) {
 
   if (!systemName || !systemName.trim()) {
     console.error('Error: device-name is required and cannot be empty.');
-    console.error('Usage: fortytwo configure <device-name> <directory>');
+    console.error('Usage: xlii configure <device-name> <directory>');
     process.exit(1);
   }
 
   if (!baseDir || !baseDir.trim()) {
     console.error('Error: directory is required and cannot be empty.');
-    console.error('Usage: fortytwo configure <device-name> <directory>');
+    console.error('Usage: xlii configure <device-name> <directory>');
     process.exit(1);
   }
 
@@ -56,7 +56,7 @@ export async function configure(args) {
     process.exit(1);
   }
 
-  const storagePath = join(homedir(), 'fortytwo');
+  const storagePath = join(homedir(), 'xlii');
   const storageConfigPath = join(storagePath, 'configuration.json');
 
   const config = {
@@ -81,13 +81,13 @@ export async function configure(args) {
   console.log(`  Local config:   ${getConfigFile()}`);
   console.log(`  Storage path:   ${storagePath}`);
   console.log(`  Storage config: ${storageConfigPath}`);
-  console.log(`\nRun 'fortytwo harvest' to copy memory files to storage.`);
+  console.log(`\nRun 'xlii harvest' to copy memory files to storage.`);
 }
 
 export async function harvest(args) {
   const config = await loadConfig();
   if (!config) {
-    throw new Error('Not configured. Run "fortytwo configure <systemName> <baseDir>" first.');
+    throw new Error('Not configured. Run "xlii configure <systemName> <baseDir>" first.');
   }
 
   const storageConfig = await loadStorageConfig(config.storagePath);
@@ -123,7 +123,7 @@ export async function harvest(args) {
 export async function sow(args) {
   const config = await loadConfig();
   if (!config) {
-    throw new Error('Not configured. Run "fortytwo configure <systemName> <baseDir>" first.');
+    throw new Error('Not configured. Run "xlii configure <systemName> <baseDir>" first.');
   }
 
   const storageConfig = await loadStorageConfig(config.storagePath);
@@ -167,7 +167,7 @@ export async function sow(args) {
 export async function graft(args) {
   const config = await loadConfig();
   if (!config) {
-    throw new Error('Not configured. Run "fortytwo configure <systemName> <baseDir>" first.');
+    throw new Error('Not configured. Run "xlii configure <systemName> <baseDir>" first.');
   }
 
   const storageConfig = await loadStorageConfig(config.storagePath);
@@ -270,7 +270,7 @@ export async function graft(args) {
 export async function diff(args) {
   const config = await loadConfig();
   if (!config) {
-    throw new Error('Not configured. Run "fortytwo configure <systemName> <baseDir>" first.');
+    throw new Error('Not configured. Run "xlii configure <systemName> <baseDir>" first.');
   }
 
   const storageConfig = await loadStorageConfig(config.storagePath);
@@ -409,13 +409,13 @@ export async function diff(args) {
 
 export async function addBaseDir(args) {
   if (args.length < 1) {
-    console.error('Usage: fortytwo addBaseDir <directory>');
+    console.error('Usage: xlii addBaseDir <directory>');
     process.exit(1);
   }
 
   const config = await loadConfig();
   if (!config) {
-    throw new Error('Not configured. Run "fortytwo configure <systemName> <baseDir>" first.');
+    throw new Error('Not configured. Run "xlii configure <systemName> <baseDir>" first.');
   }
 
   const [newDir] = args;
@@ -434,18 +434,18 @@ export async function addBaseDir(args) {
   await saveConfig(config);
 
   console.log(`Added base directory: ${newDir}`);
-  console.log(`Run 'fortytwo harvest' to copy memory files to storage.`);
+  console.log(`Run 'xlii harvest' to copy memory files to storage.`);
 }
 
 export async function addCompleteDir(args) {
   if (args.length < 1) {
-    console.error('Usage: fortytwo addCompleteDir <directory>');
+    console.error('Usage: xlii addCompleteDir <directory>');
     process.exit(1);
   }
 
   const config = await loadConfig();
   if (!config) {
-    throw new Error('Not configured. Run "fortytwo configure <systemName> <baseDir>" first.');
+    throw new Error('Not configured. Run "xlii configure <systemName> <baseDir>" first.');
   }
 
   const [newDir] = args;
@@ -468,18 +468,18 @@ export async function addCompleteDir(args) {
   await saveConfig(config);
 
   console.log(`Added complete directory: ${newDir}`);
-  console.log(`Run 'fortytwo harvest' to copy all files to storage.`);
+  console.log(`Run 'xlii harvest' to copy all files to storage.`);
 }
 
 export async function addMemoryFile(args) {
   if (args.length < 1) {
-    console.error('Usage: fortytwo addMemoryFile <filename>');
+    console.error('Usage: xlii addMemoryFile <filename>');
     process.exit(1);
   }
 
   const config = await loadConfig();
   if (!config) {
-    throw new Error('Not configured. Run "fortytwo configure <systemName> <baseDir>" first.');
+    throw new Error('Not configured. Run "xlii configure <systemName> <baseDir>" first.');
   }
 
   const [newFile] = args;
@@ -494,18 +494,18 @@ export async function addMemoryFile(args) {
   await saveStorageConfig(config.storagePath, storageConfig);
 
   console.log(`Added memory file: ${newFile}`);
-  console.log(`Run 'fortytwo harvest' to copy memory files to storage.`);
+  console.log(`Run 'xlii harvest' to copy memory files to storage.`);
 }
 
 export async function status(args) {
   const config = await loadConfig();
 
-  console.log('=== FortyTwo Status ===\n');
+  console.log('=== xlii Status ===\n');
 
   // Configuration status
   console.log('Configuration:');
   if (!config) {
-    console.log('  Not configured. Run "fortytwo configure <device-name> <directory>" first.');
+    console.log('  Not configured. Run "xlii configure <device-name> <directory>" first.');
     return;
   }
 
@@ -557,13 +557,13 @@ export async function status(args) {
   console.log('\nStorage Mirror:');
   if (!existsSync(expandedStorage)) {
     console.log(`  Storage path does not exist: ${expandedStorage}`);
-    console.log('  Run "fortytwo harvest" to create it.');
+    console.log('  Run "xlii harvest" to create it.');
     return;
   }
 
   if (!existsSync(systemStoragePath)) {
     console.log(`  No files synced yet for device "${config.systemName}".`);
-    console.log('  Run "fortytwo harvest" to sync memory files.');
+    console.log('  Run "xlii harvest" to sync memory files.');
     return;
   }
 
@@ -607,7 +607,7 @@ export async function openconfig(args) {
   const configFile = getConfigFile();
 
   if (!existsSync(configFile)) {
-    console.error('Config file does not exist. Run "fortytwo configure <device-name> <directory>" first.');
+    console.error('Config file does not exist. Run "xlii configure <device-name> <directory>" first.');
     process.exit(1);
   }
 
@@ -633,7 +633,7 @@ export async function openconfig(args) {
 export async function watch(args) {
   const config = await loadConfig();
   if (!config) {
-    throw new Error('Not configured. Run "fortytwo configure <systemName> <baseDir>" first.');
+    throw new Error('Not configured. Run "xlii configure <systemName> <baseDir>" first.');
   }
 
   const storageConfig = await loadStorageConfig(config.storagePath);

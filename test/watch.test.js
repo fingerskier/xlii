@@ -16,11 +16,11 @@ function toStorablePathSegment(absolutePath) {
 }
 
 describe('watch module', () => {
-  const testDir = join(tmpdir(), 'fortytwo-test-watch-' + Date.now());
+  const testDir = join(tmpdir(), 'xlii-test-watch-' + Date.now());
   const baseDir = join(testDir, 'base');
   const storageDir = join(testDir, 'storage');
   const configDir = join(testDir, 'config');
-  const binPath = join(process.cwd(), 'bin', 'fortytwo.js');
+  const binPath = join(process.cwd(), 'bin', 'xlii.js');
 
   function sleep(ms) {
     return new Promise(resolve => setTimeout(resolve, ms));
@@ -29,7 +29,7 @@ describe('watch module', () => {
   function spawnWatch(env = {}) {
     const fullEnv = {
       ...process.env,
-      FORTYTWO_CONFIG_DIR: configDir,
+      XLII_CONFIG_DIR: configDir,
       ...env
     };
 

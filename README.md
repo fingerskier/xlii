@@ -1,4 +1,4 @@
-# fortytwo
+# xlii
 ## an agent memory manager
 
 Manages AI memory files (CLAUDE.md, AGENTS.md, et cetera) which fall outside of git repos.
@@ -18,23 +18,23 @@ Memory files that get stored:
 
 ## Functionality
 
-`npx fortytwo configure myPC ~/dev`
-* creates the local configuration file `~/.fortytwo/config.json` with this system's name and base directory for storing memory files.
+`npx xlii configure myPC ~/dev`
+* creates the local configuration file `~/.xlii/config.json` with this system's name and base directory for storing memory files.
 ```json
 {
   "systemName": "myPC",
   "baseDirectories": ["~/dev"],
   "completeDirectories": ["~/.claude/skills"],
-  "storagePath": "~/fortytwo/myPC"
+  "storagePath": "~/xlii/myPC"
 }
 ```
 * if you clone the agent-memory on another machine you would give it a different system name, which gets stored in a separate directory in the "storagePath".
-* mirrors each of the base directories into `~/fortytwo/myPC/`
+* mirrors each of the base directories into `~/xlii/myPC/`
   * recursively traverses each base directory, stopping when it reaches a directory containing a git repo on any branch
   * only directories and the memory files are stored in the mirror image
 * paths are expanded in the storage path for clarity: e.g. `~/dev` becomes `./myPC/home/me/dev` in the storage path
 
-* create `~/fortytwo/configuration.json` file
+* create `~/xlii/configuration.json` file
 ```json
 {
   "memoryFiles": ["CLAUDE.md", "AGENTS.md", "TODO.md", "SPEC.md"]
@@ -43,7 +43,7 @@ Memory files that get stored:
 
 An example directory structure:
 ```
-~/fortyTwo
+~/xlii
 ├── myPC
 │   ├── /home/me/dev
 │   │   ├── CLAUDE.md
@@ -73,28 +73,28 @@ An example directory structure:
 
 ## Usage
 
-**First** run `npx fortytwo configure myPC ~/dev /memory`
+**First** run `npx xlii configure myPC ~/dev /memory`
 * sets update the `~/dev` as the base directory
 * set `/memory` as the storage path
 
 **Then** use the following commands to manage your memory files:
 
-`npx fortytwo harvest` ~ copies memory files from the base directories into the storagePath mirror image regardless of which is newer.  If new memory files are found in the base directories they are added to the mirror image.
+`npx xlii harvest` ~ copies memory files from the base directories into the storagePath mirror image regardless of which is newer.  If new memory files are found in the base directories they are added to the mirror image.
 
-`npx fortytwo sow` ~ copies memory files from the storagePath mirror image back into the base directories regardless of which is newer.  If new memory files are found in the mirror image they are added to the base directories.
+`npx xlii sow` ~ copies memory files from the storagePath mirror image back into the base directories regardless of which is newer.  If new memory files are found in the mirror image they are added to the base directories.
 
-`npx fortytwo graft` ~ syncs storage and base directories by taking whichever memory files are newer.
+`npx xlii graft` ~ syncs storage and base directories by taking whichever memory files are newer.
 * identical timestamps are considered "no change".
 * if a memory file exists in only one location it is copied to the other location.
 
-`npx fortytwo diff` ~ lists differences between memory files in the base directories and the storagePath mirror image.
+`npx xlii diff` ~ lists differences between memory files in the base directories and the storagePath mirror image.
 
-`npx fortytwo addBaseDir ~/otherDev` ~ adds another base directory to the configuration and updates the mirror image.
+`npx xlii addBaseDir ~/otherDev` ~ adds another base directory to the configuration and updates the mirror image.
 
-`npx fortytwo addCompleteDir ~/.claude/skills` ~ adds a "complete" directory to the configuration and updates the mirror image.
+`npx xlii addCompleteDir ~/.claude/skills` ~ adds a "complete" directory to the configuration and updates the mirror image.
 
-`npx fortytwo addmemoryFile STUFF.md` ~ adds another memory file to be tracked.
+`npx xlii addmemoryFile STUFF.md` ~ adds another memory file to be tracked.
 
-`npx fortytwo watch` ~ watches the base directories for changes to memory files and automatically syncs them to the storagePath mirror image when they change if they are newer than what's in the storage-path.
+`npx xlii watch` ~ watches the base directories for changes to memory files and automatically syncs them to the storagePath mirror image when they change if they are newer than what's in the storage-path.
 
-`npx fortytwo openconfig` ~ opens the fortytwo config file in the default editor.
+`npx xlii openconfig` ~ opens the xlii config file in the default editor.

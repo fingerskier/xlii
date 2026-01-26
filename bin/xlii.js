@@ -17,70 +17,70 @@ import {
 
 const commands = {
   configure: {
-    description: 'Configure fortytwo with device name and base directory',
-    usage: 'fortytwo configure <device-name> <directory>',
+    description: 'Configure xlii with device name and base directory',
+    usage: 'xlii configure <device-name> <directory>',
     handler: configure
   },
   harvest: {
     description: 'Copy memory files from base directories to storage',
-    usage: 'fortytwo harvest',
+    usage: 'xlii harvest',
     handler: harvest
   },
   sow: {
     description: 'Copy memory files from storage to base directories',
-    usage: 'fortytwo sow',
+    usage: 'xlii sow',
     handler: sow
   },
   graft: {
     description: 'Sync by taking whichever memory files are newer',
-    usage: 'fortytwo graft',
+    usage: 'xlii graft',
     handler: graft
   },
   diff: {
     description: 'List differences between base directories and storage',
-    usage: 'fortytwo diff',
+    usage: 'xlii diff',
     handler: diff
   },
   addBaseDir: {
     description: 'Add a base directory to track',
-    usage: 'fortytwo addBaseDir <directory>',
+    usage: 'xlii addBaseDir <directory>',
     handler: addBaseDir
   },
   addCompleteDir: {
     description: 'Add a complete directory (full sync)',
-    usage: 'fortytwo addCompleteDir <directory>',
+    usage: 'xlii addCompleteDir <directory>',
     handler: addCompleteDir
   },
   addMemoryFile: {
     description: 'Add a memory file pattern to track',
-    usage: 'fortytwo addMemoryFile <filename>',
+    usage: 'xlii addMemoryFile <filename>',
     handler: addMemoryFile
   },
   watch: {
     description: 'Watch for changes and auto-sync to storage',
-    usage: 'fortytwo watch',
+    usage: 'xlii watch',
     handler: watch
   },
   status: {
     description: 'Show current configuration and storage status',
-    usage: 'fortytwo status',
+    usage: 'xlii status',
     handler: status
   },
   openconfig: {
     description: 'Open the config file in default editor',
-    usage: 'fortytwo openconfig',
+    usage: 'xlii openconfig',
     handler: openconfig
   }
 };
 
 function showHelp() {
-  console.log('fortytwo - AI Memory File Manager\n');
-  console.log('Usage: fortytwo <command> [options]\n');
+  console.log('xlii - AI Memory File Manager\n');
+  console.log('Usage: xlii <command> [options]\n');
   console.log('Commands:');
   for (const [name, cmd] of Object.entries(commands)) {
     console.log(`  ${name.padEnd(16)} ${cmd.description}`);
   }
-  console.log('\nUse "fortytwo <command> --help" for more information about a command.');
+  console.log('\nUse "xlii <command> --help" for more information about a command.');
 }
 
 async function main() {

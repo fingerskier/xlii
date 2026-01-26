@@ -3,7 +3,7 @@ import { existsSync } from 'node:fs';
 import { homedir } from 'node:os';
 import { join, dirname } from 'node:path';
 
-const CONFIG_DIR = process.env.FORTYTWO_CONFIG_DIR || join(homedir(), '.fortytwo');
+const CONFIG_DIR = process.env.XLII_CONFIG_DIR || join(homedir(), '.xlii');
 const CONFIG_FILE = join(CONFIG_DIR, 'config.json');
 const DEFAULT_MEMORY_FILES = ['CLAUDE.md', 'AGENTS.md', 'TODO.md', 'SPEC.md'];
 

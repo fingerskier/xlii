@@ -11,7 +11,7 @@ import {
 } from '../src/sync.js';
 
 describe('sync module', () => {
-  const testDir = join(tmpdir(), 'fortytwo-test-sync-' + Date.now());
+  const testDir = join(tmpdir(), 'xlii-test-sync-' + Date.now());
   const sourceDir = join(testDir, 'source');
   const targetDir = join(testDir, 'target');
 

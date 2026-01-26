@@ -7,17 +7,17 @@ import { tmpdir, homedir } from 'node:os';
 import { execSync } from 'node:child_process';
 
 describe('CLI commands integration', () => {
-  const testDir = join(tmpdir(), 'fortytwo-test-cli-' + Date.now());
+  const testDir = join(tmpdir(), 'xlii-test-cli-' + Date.now());
   const baseDir = join(testDir, 'base');
   const storageDir = join(testDir, 'storage');
   const configDir = join(testDir, 'config');
-  const binPath = join(process.cwd(), 'bin', 'fortytwo.js');
+  const binPath = join(process.cwd(), 'bin', 'xlii.js');
 
   // Helper to run CLI commands
   function runCli(args, env = {}) {
     const fullEnv = {
       ...process.env,
-      FORTYTWO_CONFIG_DIR: configDir,
+      XLII_CONFIG_DIR: configDir,
       ...env
     };
 
@@ -56,7 +56,7 @@ describe('CLI commands integration', () => {
     it('should display help text', () => {
       const output = runCli('--help');
 
-      assert.ok(output.includes('fortytwo'));
+      assert.ok(output.includes('xlii'));
       assert.ok(output.includes('configure'));
       assert.ok(output.includes('harvest'));
       assert.ok(output.includes('sow'));
@@ -75,7 +75,7 @@ describe('CLI commands integration', () => {
 });
 
 describe('Command argument validation', () => {
-  const binPath = join(process.cwd(), 'bin', 'fortytwo.js');
+  const binPath = join(process.cwd(), 'bin', 'xlii.js');
 
   function runCli(args) {
     try {
