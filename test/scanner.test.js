@@ -104,6 +104,37 @@ describe('scanner module', () => {
       assert.ok(results.length > 0);
       assert.ok(results[0].mtime instanceof Date);
     });
+
+    it('should collect memory files from base directory even if it is a git repo', async () => {
+      // Create a base directory that is itself a git repo
+      const gitBaseDir = join(testDir, 'git-base');
+      await mkdir(join(gitBaseDir, '.git'), { recursive: true });
+      await writeFile(join(gitBaseDir, 'CLAUDE.md'), '# Git base root');
+      await mkdir(join(gitBaseDir, 'sub-non-git'), { recursive: true });
+      await writeFile(join(gitBaseDir, 'sub-non-git', 'CLAUDE.md'), '# Sub non-git');
+      await mkdir(join(gitBaseDir, 'sub-git', '.git'), { recursive: true });
+      await writeFile(join(gitBaseDir, 'sub-git', 'CLAUDE.md'), '# Sub git');
+
+      const memoryFiles = ['CLAUDE.md'];
+      const results = await scanBaseDirectory(gitBaseDir, memoryFiles);
+      const paths = results.map(r => r.sourcePath);
+
+      // Root memory file should be found even though base dir is a git repo
+      assert.ok(
+        paths.some(p => p === join(gitBaseDir, 'CLAUDE.md')),
+        'Should find CLAUDE.md at the root of a git-repo base directory'
+      );
+      // Non-git subdirectory memory files should still be found
+      assert.ok(
+        paths.some(p => p.includes('sub-non-git')),
+        'Should find CLAUDE.md in non-git subdirectory'
+      );
+      // Git-repo subdirectory memory files should still be skipped
+      assert.ok(
+        !paths.some(p => p.includes('sub-git')),
+        'Should NOT find CLAUDE.md in git-repo subdirectory'
+      );
+    });
   });
 
   describe('scanCompleteDirectory', () => {
