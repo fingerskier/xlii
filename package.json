@@ -1,6 +1,6 @@
 {
   "name": "xlii",
-  "version": "2026.1.23",
+  "version": "2026.1.24",
   "description": "Manages AI memory files (CLAUDE.md, AGENTS.md, etc.) which fall outside of git repos",
   "type": "module",
   "main": "src/index.js",
