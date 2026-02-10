@@ -11,8 +11,11 @@ export async function scanBaseDirectory(baseDir, memoryFiles) {
   const expanded = expandPath(baseDir);
   const results = [];
 
-  async function scan(currentDir) {
-    if (isGitRepo(currentDir)) {
+  async function scan(currentDir, isRoot = false) {
+    // Always scan the explicitly-configured base directory root, even if it
+    // is itself a git repo.  Only enforce the git-repo boundary for
+    // subdirectories discovered during recursion.
+    if (!isRoot && isGitRepo(currentDir)) {
       return;
     }
 
@@ -41,7 +44,7 @@ export async function scanBaseDirectory(baseDir, memoryFiles) {
     }
   }
 
-  await scan(expanded);
+  await scan(expanded, true);
   return results;
 }
 
