@@ -9,6 +9,7 @@ import {
   diff,
   addBaseDir,
   addCompleteDir,
+  addSingleFile,
   addMemoryFile,
   watch,
   status,
@@ -50,6 +51,11 @@ const commands = {
     description: 'Add a complete directory (full sync)',
     usage: 'xlii addCompleteDir <directory>',
     handler: addCompleteDir
+  },
+  addSingleFile: {
+    description: 'Add a single file path to track',
+    usage: 'xlii addSingleFile <file-path>',
+    handler: addSingleFile
   },
   addMemoryFile: {
     description: 'Add a memory file pattern to track',
