@@ -1,4 +1,4 @@
-import { existsSync } from 'node:fs';
+import { existsSync, statSync } from 'node:fs';
 import { join, dirname, basename } from 'node:path';
 import chokidar from 'chokidar';
 import { homedir } from 'node:os';
@@ -596,6 +596,10 @@ export async function addSingleFile(args) {
 
   if (!existsSync(expandedFile)) {
     throw new Error(`File does not exist: ${expandedFile}`);
+  }
+
+  if (!statSync(expandedFile).isFile()) {
+    throw new Error(`Path is not a regular file: ${expandedFile}`);
   }
 
   if (!config.singleFiles) {

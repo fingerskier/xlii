@@ -26,7 +26,7 @@ Memory files that get stored:
   "baseDirectories": ["~/dev"],
   "completeDirectories": ["~/.claude/skills"],
   "singleFiles": ["~/.claude/settings.json"],
-  "storagePath": "~/xlii/myPC"
+  "storagePath": "~/xlii"
 }
 ```
 * if you clone the agent-memory on another machine you would give it a different system name, which gets stored in a separate directory in the "storagePath".

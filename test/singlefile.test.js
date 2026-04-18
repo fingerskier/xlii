@@ -5,6 +5,7 @@ import { existsSync } from 'node:fs';
 import { join } from 'node:path';
 import { tmpdir } from 'node:os';
 import { execSync } from 'node:child_process';
+import { getStoragePath } from '../src/sync.js';
 
 describe('singleFiles config integration', () => {
   const testDir = join(tmpdir(), 'xlii-test-single-' + Date.now());
@@ -49,15 +50,22 @@ describe('singleFiles config integration', () => {
     await rm(testDir, { recursive: true, force: true });
   });
 
-  it('addSingleFile should add the file to config', () => {
+  it('addSingleFile should add the file to config', async () => {
     const output = runCli(`addSingleFile "${settingsFile}"`);
     assert.ok(output.includes('Added single file'), output);
 
     const config = JSON.parse(
-      execSync(`node -e "process.stdout.write(require('fs').readFileSync('${join(configDir, 'config.json')}','utf-8'))"`, { encoding: 'utf-8' })
+      await readFile(join(configDir, 'config.json'), 'utf-8')
     );
     assert.ok(Array.isArray(config.singleFiles));
     assert.ok(config.singleFiles.includes(settingsFile));
+  });
+
+  it('addSingleFile should fail when path is a directory', () => {
+    const dirPath = join(testDir, 'not-a-file');
+    execSync(`mkdir -p "${dirPath}"`);
+    const output = runCli(`addSingleFile "${dirPath}"`);
+    assert.ok(output.includes('not a regular file'), output);
   });
 
   it('addSingleFile should fail for a non-existent file', () => {
@@ -70,14 +78,14 @@ describe('singleFiles config integration', () => {
     assert.ok(output.includes('already tracked'), output);
   });
 
-  it('harvest should copy the single file to storage', () => {
+  it('harvest should copy the single file to storage', async () => {
     const output = runCli('harvest');
     assert.ok(output.includes('single file') || output.includes('Copied'), output);
 
-    const expectedStorage = join(storageDir, 'testPC', settingsFile.replace(/^[/\\]+/, ''));
+    const expectedStorage = getStoragePath(storageDir, 'testPC', settingsFile);
     assert.ok(existsSync(expectedStorage), `expected storage file at ${expectedStorage}`);
 
-    const content = execSync(`node -e "process.stdout.write(require('fs').readFileSync('${expectedStorage}','utf-8'))"`, { encoding: 'utf-8' });
+    const content = await readFile(expectedStorage, 'utf-8');
     assert.strictEqual(content, '{"theme":"dark"}');
   });
 
@@ -113,7 +121,7 @@ describe('singleFiles config integration', () => {
     const output = runCli('graft');
     assert.ok(output.includes('single file') || output.includes('Storage'), output);
 
-    const expectedStorage = join(storageDir, 'testPC', settingsFile.replace(/^[/\\]+/, ''));
+    const expectedStorage = getStoragePath(storageDir, 'testPC', settingsFile);
     const storageContent = await readFile(expectedStorage, 'utf-8');
     assert.strictEqual(storageContent, '{"theme":"graft"}');
   });
