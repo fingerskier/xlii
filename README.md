@@ -25,13 +25,15 @@ Memory files that get stored:
   "systemName": "myPC",
   "baseDirectories": ["~/dev"],
   "completeDirectories": ["~/.claude/skills"],
-  "storagePath": "~/xlii/myPC"
+  "singleFiles": ["~/.claude/settings.json"],
+  "storagePath": "~/xlii"
 }
 ```
 * if you clone the agent-memory on another machine you would give it a different system name, which gets stored in a separate directory in the "storagePath".
 * mirrors each of the base directories into `~/xlii/myPC/`
   * recursively traverses each base directory, stopping when it reaches a directory containing a git repo on any branch
   * only directories and the memory files are stored in the mirror image
+* "Single files" are tracked individually by exact path (no directory scanning, no memory-file filtering) — useful for config files like `~/.claude/settings.json`.
 * paths are expanded in the storage path for clarity: e.g. `~/dev` becomes `./myPC/home/me/dev` in the storage path
 
 * create `~/xlii/configuration.json` file
@@ -92,6 +94,8 @@ An example directory structure:
 `npx xlii addBaseDir ~/otherDev` ~ adds another base directory to the configuration and updates the mirror image.
 
 `npx xlii addCompleteDir ~/.claude/skills` ~ adds a "complete" directory to the configuration and updates the mirror image.
+
+`npx xlii addSingleFile ~/.claude/settings.json` ~ adds a single file path to track (the file is synced by exact path, not by directory scanning).
 
 `npx xlii addmemoryFile STUFF.md` ~ adds another memory file to be tracked.
 

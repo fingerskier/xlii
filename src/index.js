@@ -1,4 +1,4 @@
-import { existsSync } from 'node:fs';
+import { existsSync, statSync } from 'node:fs';
 import { join, dirname, basename } from 'node:path';
 import chokidar from 'chokidar';
 import { homedir } from 'node:os';
@@ -65,6 +65,7 @@ export async function configure(args) {
     systemName: systemName.trim(),
     baseDirectories: [baseDir],
     completeDirectories: [],
+    singleFiles: [],
     storagePath
   };
 
@@ -119,6 +120,17 @@ export async function harvest(args) {
     }
   }
 
+  for (const singleFile of config.singleFiles || []) {
+    const expandedSingle = expandPath(singleFile);
+    if (!existsSync(expandedSingle)) {
+      console.log(`\nSkipping single file (not found): ${singleFile}`);
+      continue;
+    }
+    const targetPath = await copyToStorage(expandedSingle, config.storagePath, config.systemName);
+    console.log(`\nCopied single file: ${expandedSingle} -> ${targetPath}`);
+    copiedCount++;
+  }
+
   console.log(`\nHarvest complete. ${copiedCount} file(s) copied to storage.`);
 }
 
@@ -161,6 +173,21 @@ export async function sow(args) {
       console.log(`  Copied: ${file.storagePath} -> ${targetPath}`);
       copiedCount++;
     }
+  }
+
+  for (const singleFile of config.singleFiles || []) {
+    const expandedSingle = expandPath(singleFile);
+    const storagePath = getStoragePath(config.storagePath, config.systemName, singleFile);
+
+    if (!existsSync(storagePath)) {
+      console.log(`\nSkipping single file (not in storage): ${singleFile}`);
+      continue;
+    }
+
+    await ensureDir(dirname(expandedSingle));
+    await syncFile(storagePath, expandedSingle, true);
+    console.log(`\nCopied single file: ${storagePath} -> ${expandedSingle}`);
+    copiedCount++;
   }
 
   console.log(`\nSow complete. ${copiedCount} file(s) copied from storage.`);
@@ -262,6 +289,39 @@ export async function graft(args) {
           console.log(`  <- Complete (newer): ${completeFile.sourcePath}`);
           fromStorageCount++;
         }
+      }
+    }
+  }
+
+  for (const singleFile of config.singleFiles || []) {
+    const expandedSingle = expandPath(singleFile);
+    const storagePath = getStoragePath(config.storagePath, config.systemName, singleFile);
+    const sourceExists = existsSync(expandedSingle);
+    const storageExists = existsSync(storagePath);
+
+    if (!sourceExists && !storageExists) {
+      continue;
+    }
+
+    if (sourceExists && !storageExists) {
+      await copyToStorage(expandedSingle, config.storagePath, config.systemName);
+      console.log(`  -> Storage (single file): ${expandedSingle}`);
+      toStorageCount++;
+    } else if (!sourceExists && storageExists) {
+      await ensureDir(dirname(expandedSingle));
+      await syncFile(storagePath, expandedSingle, true);
+      console.log(`  <- Source (single file): ${expandedSingle}`);
+      fromStorageCount++;
+    } else {
+      const comparison = await compareFiles(expandedSingle, storagePath);
+      if (comparison.status === 'file1-newer') {
+        await copyToStorage(expandedSingle, config.storagePath, config.systemName);
+        console.log(`  -> Storage (single file, newer): ${expandedSingle}`);
+        toStorageCount++;
+      } else if (comparison.status === 'file2-newer') {
+        await syncFile(storagePath, expandedSingle, true);
+        console.log(`  <- Source (single file, newer): ${expandedSingle}`);
+        fromStorageCount++;
       }
     }
   }
@@ -375,6 +435,49 @@ export async function diff(args) {
     }
   }
 
+  for (const singleFile of config.singleFiles || []) {
+    const expandedSingle = expandPath(singleFile);
+    const storagePath = getStoragePath(config.storagePath, config.systemName, singleFile);
+    const sourceExists = existsSync(expandedSingle);
+    const storageExists = existsSync(storagePath);
+
+    if (!sourceExists && !storageExists) {
+      continue;
+    }
+
+    if (sourceExists && !storageExists) {
+      differences.push({
+        type: 'only-base',
+        path: expandedSingle,
+        relativePath: singleFile,
+        baseDir: singleFile,
+        isSingleFile: true
+      });
+    } else if (!sourceExists && storageExists) {
+      differences.push({
+        type: 'only-storage',
+        path: storagePath,
+        relativePath: singleFile,
+        baseDir: singleFile,
+        isSingleFile: true
+      });
+    } else {
+      const comparison = await compareFiles(expandedSingle, storagePath);
+      if (comparison.status !== 'identical') {
+        differences.push({
+          type: comparison.status,
+          basePath: expandedSingle,
+          storagePath,
+          relativePath: singleFile,
+          baseDir: singleFile,
+          baseMtime: comparison.mtime1,
+          storageMtime: comparison.mtime2,
+          isSingleFile: true
+        });
+      }
+    }
+  }
+
   if (differences.length === 0) {
     console.log('No differences found. All memory files are in sync.');
     return;
@@ -383,7 +486,11 @@ export async function diff(args) {
   console.log(`Found ${differences.length} difference(s):\n`);
 
   for (const diff of differences) {
-    const dirType = diff.isComplete ? '[complete]' : '[base]';
+    const dirType = diff.isSingleFile
+      ? '[single]'
+      : diff.isComplete
+        ? '[complete]'
+        : '[base]';
 
     switch (diff.type) {
       case 'only-base':
@@ -473,6 +580,44 @@ export async function addCompleteDir(args) {
   console.log(`Run 'xlii harvest' to copy all files to storage.`);
 }
 
+export async function addSingleFile(args) {
+  if (args.length < 1) {
+    console.error('Usage: xlii addSingleFile <file-path>');
+    process.exit(1);
+  }
+
+  const config = await loadConfig();
+  if (!config) {
+    throw new Error('Not configured. Run "xlii configure <systemName> <baseDir>" first.');
+  }
+
+  const [newFile] = args;
+  const expandedFile = expandPath(newFile);
+
+  if (!existsSync(expandedFile)) {
+    throw new Error(`File does not exist: ${expandedFile}`);
+  }
+
+  if (!statSync(expandedFile).isFile()) {
+    throw new Error(`Path is not a regular file: ${expandedFile}`);
+  }
+
+  if (!config.singleFiles) {
+    config.singleFiles = [];
+  }
+
+  if (config.singleFiles.includes(newFile)) {
+    console.log(`File already tracked as single file: ${newFile}`);
+    return;
+  }
+
+  config.singleFiles.push(newFile);
+  await saveConfig(config);
+
+  console.log(`Added single file: ${newFile}`);
+  console.log(`Run 'xlii harvest' to copy it to storage.`);
+}
+
 export async function addMemoryFile(args) {
   if (args.length < 1) {
     console.error('Usage: xlii addMemoryFile <filename>');
@@ -536,6 +681,19 @@ export async function status(args) {
       const exists = existsSync(expanded);
       const status = exists ? '' : ' (NOT FOUND)';
       console.log(`  - ${dir}${status}`);
+    }
+  } else {
+    console.log('  (none)');
+  }
+
+  // Single files
+  console.log('\nSingle Files:');
+  if (config.singleFiles?.length > 0) {
+    for (const file of config.singleFiles) {
+      const expanded = expandPath(file);
+      const exists = existsSync(expanded);
+      const status = exists ? '' : ' (NOT FOUND)';
+      console.log(`  - ${file}${status}`);
     }
   } else {
     console.log('  (none)');
@@ -716,6 +874,21 @@ export async function watch(args) {
     watchers.push(watcher);
 
     console.log(`Watching complete directory: ${completeDir}`);
+  }
+
+  for (const singleFile of config.singleFiles || []) {
+    const expanded = expandPath(singleFile);
+
+    const watcher = chokidar.watch(expanded, {
+      persistent: true,
+      ignoreInitial: true
+    });
+
+    watcher.on('change', scheduleSync);
+    watcher.on('add', scheduleSync);
+    watchers.push(watcher);
+
+    console.log(`Watching single file: ${singleFile}`);
   }
 
   console.log(`\nWatching for changes (debounce: ${debounceMs}ms). Press Ctrl+C to stop.\n`);
